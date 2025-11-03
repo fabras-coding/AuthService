@@ -28,8 +28,8 @@ app.UseHttpsRedirection();
 app.MapPost("/token", async (LoginDTO loginDto, ILoginAppService loginService) =>
 {
     
-    var token = await loginService.AuthenticateAsync(loginDto);
-    return Results.Ok(new { token });
+    var access_token = await loginService.AuthenticateAsync(loginDto);
+    return Results.Ok(new { access_token });
 });
 
 app.Run();

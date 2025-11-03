@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthService.Application.Interfaces;
 using AuthService.Application.DTOs;
-using AuthService.Domain.Interfaces;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Repositories;
+using AutoMapper;
 
 
 
@@ -18,23 +18,31 @@ namespace AuthService.Application.Services
         private readonly IAuthService _authService;
         private readonly IUserRepository _userRepository;
 
-        public LoginAppService(IAuthService authService, IUserRepository userRepository)
+        private readonly IMapper _mapper;
+
+        public LoginAppService(IAuthService authService, IUserRepository userRepository, IMapper mapper)
         {
             _authService = authService;
             _userRepository = userRepository;
+            _mapper = mapper;
+
         }
 
-        public async Task<string> AuthenticateAsync(LoginDTO loginDto)
+        public async Task<TokenResultDTO> AuthenticateAsync(LoginDTO loginDto)
         {
-          
-            var user = _userRepository.GetUserByUsernameAsync(loginDto.Username).Result;
+
+            var jwtUser = _userRepository.GetUserByUsernameAsync(loginDto.Username).Result;
+            
+            if (jwtUser == null || jwtUser.Password != loginDto.Password)
+                throw new UnauthorizedAccessException("User or password invalid.");
+
+            var user = _mapper.Map<JWTUserDTO>(jwtUser);
 
             if (user == null || user.Password != loginDto.Password)
                 throw new UnauthorizedAccessException("User or password invalid.");
             else
             {
-                var token = await _authService.GenerateTokenAsync(user);
-                return token;
+                return await _authService.GenerateTokenAsync(user);
             }
 
         }

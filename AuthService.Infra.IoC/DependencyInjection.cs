@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthService.Application.Interfaces;
 using AuthService.Application.Services;
-using AuthService.Domain.Interfaces;
 using AuthService.Domain.Repositories;
 using AuthService.Infra.Data.Context;
 using AuthService.Infra.Data.Repositories;
@@ -25,6 +24,8 @@ namespace AuthService.Infra.IoC
             services.AddScoped<IAuthService, Application.Services.AuthService>(); // JWT token generator
             services.AddScoped<ILoginAppService, LoginAppService>(); // Application service
             services.AddScoped<IUserRepository, UserRepository>(); // User repository
+
+            services.AddAutoMapper(typeof(Application.Mappings.DomainToDTOMappingProfile));
 
             return services;
         }

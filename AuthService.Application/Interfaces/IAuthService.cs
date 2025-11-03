@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthService.Application.DTOs;
 
+
 namespace AuthService.Application.Interfaces
 {
-    public interface ILoginAppService
+    public interface IAuthService
     {
-        Task<TokenResultDTO> AuthenticateAsync(LoginDTO loginDto);
+        Task<TokenResultDTO> GenerateTokenAsync(JWTUserDTO user);
     }
 }
