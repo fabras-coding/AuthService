@@ -18,6 +18,7 @@ builder.Services.AddAuthentication("Bearer")
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ClockSkew = TimeSpan.Zero,// remove delay of token when expire
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
@@ -58,8 +59,8 @@ app.MapGet("/validate", (ClaimsPrincipal user) =>
     if (user.Identity is not null && user.Identity.IsAuthenticated)
         return Results.Ok(new { message = "Token is valid." });
     return Results.Unauthorized();
-})
-.RequireAuthorization(); ;
+});
+
 
 
 app.MapGet("/random-wheather", () =>

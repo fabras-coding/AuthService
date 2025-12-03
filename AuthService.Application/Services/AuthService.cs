@@ -29,13 +29,14 @@ namespace AuthService.Application.Services
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim("app-id", user.Id.ToString()),
-                new Claim("roles", string.Join(",", user.Roles ?? new List<string>()))
+                new Claim("roles", string.Join(",", (user.Roles ?? new List<string>()).Select(r => r.Trim())))
+                
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expires = DateTime.UtcNow.AddMinutes(5);
+            var expires = DateTime.UtcNow.AddMinutes(5); //It should be UTCNow because the JWT middleware uses UTC time to validate the token expiration
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -51,7 +52,7 @@ namespace AuthService.Application.Services
                 AppId = user.Id.ToString(),
                 Token = tokenString,
                 Expiration = expires,
-                Roles = user.Roles
+                Roles = claims[2].Value.Split(',').ToList()
             };
             
 
