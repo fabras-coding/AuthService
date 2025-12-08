@@ -30,8 +30,15 @@ namespace AuthService.Application.Services
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim("app-id", user.Id.ToString()),
                 new Claim("roles", string.Join(",", (user.Roles ?? new List<string>()).Select(r => r.Trim())))
-                
+
             };
+
+            if (user.Roles != null)
+            {
+                user.Roles.ForEach(r =>
+                    claims = claims.Append(new Claim(ClaimTypes.Role, r)).ToArray()
+                );
+            }
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -54,7 +61,7 @@ namespace AuthService.Application.Services
                 Expiration = expires,
                 Roles = claims[2].Value.Split(',').ToList()
             };
-            
+
 
         }
 
