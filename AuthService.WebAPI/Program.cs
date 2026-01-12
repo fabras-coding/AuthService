@@ -13,6 +13,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy
+              .WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -34,7 +47,10 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
+app.UseCors("AllowReactApp");
+
 
 // Swagger
 
