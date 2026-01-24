@@ -4,6 +4,7 @@ using AuthService.Infra.IoC;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,8 @@ builder.Services.AddCors(options =>
         policy
               .WithOrigins("http://localhost:3000")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -42,6 +44,32 @@ builder.Services.AddAuthentication("Bearer")
                 System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
             )
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // evita o comportamento padrão que escreve cabeçalhos sem body
+                context.HandleResponse();
+
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var payload = JsonSerializer.Serialize(new { message = "Unauthorized" });
+                return context.Response.WriteAsync(payload);
+            },
+
+            OnAuthenticationFailed = context =>
+            {
+                // opcional: log de falhas de autenticação
+                Console.WriteLine("Authentication failed: " + context.Exception?.Message);
+                return Task.CompletedTask;
+            }
+        };
+    
+
+
+        
     });
 
 builder.Services.AddAuthorization();

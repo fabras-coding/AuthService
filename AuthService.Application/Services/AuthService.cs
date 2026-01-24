@@ -43,7 +43,7 @@ namespace AuthService.Application.Services
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expires = DateTime.UtcNow.AddMinutes(5); //It should be UTCNow because the JWT middleware uses UTC time to validate the token expiration
+            var expires = DateTime.UtcNow.AddMinutes(10); //It should be UTCNow because the JWT middleware uses UTC time to validate the token expiration
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
