@@ -30,7 +30,6 @@ AuthService is a lightweight authentication microservice built with .NET 9 using
 | Method | Route         | Description             |
 |--------|---------------|-------------------------|
 | POST   | `/login`      | Authenticates user and returns JWT |
-| POST   | `/register`   | Creates a new user account |
 | GET    | `/validate`   | Validates a JWT token   |
 
 ## 🧠 About JWT
