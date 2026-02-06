@@ -1,0 +1,28 @@
+<RunSettings>
+  <RunConfiguration>
+    <TestProjectFilter>AuthService.Tests</TestProjectFilter>
+  </RunConfiguration>
+  <CodeCoverage>
+    <Sources>
+      <Exclude>
+        <Source>.*AuthService.Infra.Data.Migrations.20251030022655_InitialCreate.cs</Source>
+        <Source>.*AuthService.Infra.Data.Migrations.20251030022655_InitialCreate.Designer.cs</Source>
+        <Source>.*AuthService.Infra.Data.Migrations.AuthDbContextModelSnapshot.cs</Source>
+      </Exclude>
+    </Sources>
+    <ModulePaths>
+      <Include>
+        <ModulePath>.*AuthService.Tests.*</ModulePath>
+      </Include>
+      <Exclude>
+        <ModulePath>.*AuthService.Application.*</ModulePath>
+        <ModulePath>.*AuthService.Application.Mappings.*</ModulePath>
+        <ModulePath>.*AuthService.Domain.*</ModulePath>
+        <ModulePath>.*AuthService.Infra.Data.*</ModulePath>
+        <ModulePath>.*AuthService.Infra.Data.Migrations.*</ModulePath>
+        <ModulePath>.*AuthService.Infra.IoC.*</ModulePath>
+        <ModulePath>.*AuthService.WebAPI.*</ModulePath>
+      </Exclude>
+    </ModulePaths>
+  </CodeCoverage>
+</RunSettings>
