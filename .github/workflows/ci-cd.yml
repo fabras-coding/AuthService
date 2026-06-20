@@ -29,41 +29,45 @@ jobs:
               run: dotnet build --no-restore --configuration Release
             
             - name: Test with coverage
-              run: dotnet test --no-build --configuration Release \
-                        /p:CollectCoverage=true \
-                        /p:CoverletOutputFormat=cobertura \
-                        /p:CoverletOutput=./coverage/ \
-                        /p:Exclude="[xunit.*]*"
+              run: |
+                dotnet test --no-build --configuration Release \
+                  /p:CollectCoverage=true \
+                  /p:CoverletOutputFormat=cobertura \
+                  /p:CoverletOutput=../coverage/ \
+                  /p:Exclude="[xunit.*]*"
             
             - name: Upload coverage artifact
               uses: actions/upload-artifact@v4
               with:
                 name: coverage-report
-                path: coverage
+                path: |
+                  coverage
+                  coverage-report
             
             - name: Check coverage threshold
               run: |
-                # install reportgenerator 
-                dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.1.23
+                # Install reportgenerator with fallback
+                dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.1.23 || dotnet tool update -g dotnet-reportgenerator-globaltool --version 5.1.23
                 export PATH="$PATH:$HOME/.dotnet/tools"
                 reportgenerator -reports:coverage/coverage.cobertura.xml -targetdir:coverage-report -reporttypes:TextSummary 
-                cat coverage/report/Sumarry.txt
-                COVERAGE=$(grep -Po 'Line coverage: \K[0=9]+(\.[0-9]+)?' coverage-report/Summary.txt) 
+                cat coverage-report/Summary.txt
+                COVERAGE=$(grep -Po 'Line coverage: \K[0-9]+(\.[0-9]+)?' coverage-report/Summary.txt) 
                 echo "Coverage: $COVERAGE%"
                 python3 - <<EOF
                 import re,sys
                 s=open('coverage-report/Summary.txt').read()
-                match = re.search(r'Line coverage: (\d+(\.\d+)?)%', s)
+                m = re.search(r'Line coverage: (\d+(\.\d+)?)%', s)
                 if not m:
                     print('Could not parse coverage'); sys.exit(1)
                 if float(m.group(1)) < 70.0:
                     print(f'Coverage {m.group(1)}% is below threshold'); sys.exit(1)
-                print('Coverage OK ')
+                print('Coverage OK')
                 EOF
     
     publish-image:
         needs: build-and-test
         runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         steps:
             - uses: actions/checkout@v4
             - name: Configure AWS Credentials

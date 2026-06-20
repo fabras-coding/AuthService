@@ -61,3 +61,7 @@ nunit-*.xml
 *.suo
 *.log
 *.DS_Store
+
+# Coverage directories
+coverage/
+coverage-report/
